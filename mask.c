@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
-
+#include <omp.h>
 #include "types.h"
 
 //Defining error codes
@@ -142,9 +142,17 @@ void release_seq(seq_t *s)
 
 //
 void mask(const u8 *a, const u8 *b, u8 *c, u64 n)
-{  
-  //
-  for (u64 i = 0; i < n; i++)
+{
+  u64 n2 = (n - (n%4));
+  #pragma omp parallel for
+  for (u64 i = 0; i < n2; i+=4){
+    c[i] = a[i] ^ b[i];
+    c[i+1] = a[i+1] ^ b[i+1];
+    c[i+2] = a[i+2] ^ b[i+2];
+    c[i+3] = a[i+3] ^ b[i+3];
+  }
+
+  for (u64 i = n2; i < n; i++)
     c[i] = a[i] ^ b[i];
 }
 
@@ -177,8 +185,9 @@ void measure_mask(const char *title,
       //
       clock_gettime(CLOCK_MONOTONIC_RAW, &t1);
       
-      for (u64 i = 0; i < r; i++) 
-	kernel(s1, s2, cmp_mask, n);
+      for (u64 i = 0; i < r; i++)
+        kernel(s1, s2, cmp_mask, n);
+      
       
       clock_gettime(CLOCK_MONOTONIC_RAW, &t2);
       

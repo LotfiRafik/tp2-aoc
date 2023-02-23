@@ -2,7 +2,7 @@ CC=gcc
 
 CFLAGS=-Wall -g
 
-OFLAGS=-march=native -Ofast -finline-functions -fopenmp -fopt-info-all=dist.gcc.optrpt 
+OFLAGS=-march=native -Ofast -finline-functions -funroll-loops -fopenmp -fopt-info-all=dist.gcc.optrpt 
 
 all: genseq mask
 
