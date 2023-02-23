@@ -31,13 +31,34 @@ int main(int argc, char **argv)
   if (!fp)
     return printf("Error: cannot create file '%s'\n", argv[2]), 2;
 
-  //Generate random DNA sequence
-  for (unsigned long long i = 0; i < len; i++)
-    fprintf(fp, "%c", bases[randxy(0, 4)]);
+  if(len%4) 
+      return printf("Length of sequence must be multiple of 4\n");
 
-  //Newline at EOF
-  fprintf(fp, "\n");
-  
+  unsigned char base = 0;
+  //Generate random DNA sequence
+  for (unsigned long long i = 0; i < len; i++){
+    // Generate random number between [0,3] 
+    unsigned int r = randxy(0, 4);
+    // shift left and apply binary OR to base 
+    // this is done in order to concatenate previous base to current base
+    /* Example:
+      0000 0001 (T)
+      0000 0011 (G)
+      0000 0000 (A)
+      0000 0011 (G)
+
+      After applying shift and OR ==>  0111 0011 (TGAG)
+    */
+
+    base = (((unsigned char) r) << (3 - (i%4))*2) | base;
+    // Each 4 bases (2bits*4) we print out
+    if(i%4==3){
+      fprintf(fp, "%c", base);
+      // Reinitialise base to 0
+      base = 0;
+    }
+  }
+
   //
   fclose(fp);
     
