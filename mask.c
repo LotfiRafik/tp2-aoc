@@ -87,8 +87,8 @@ seq_t *load_seq(const char *fname)
   s->len = sb.st_size;
 
   //Allocating memory for sequence bases
-  s->bases = malloc(sizeof(u8) * sb.st_size);
-  
+  // s->bases = malloc(sizeof(u8) * sb.st_size);
+  s->bases = aligned_alloc(64, sizeof(u8) * sb.st_size);
   if (!s->bases)
     {
       err_id = ERR_MALLOC_NULL;
@@ -167,7 +167,8 @@ void measure_mask(const char *title,
   f64 elapsed = 0.0;
   struct timespec t1, t2;
 
-  u8 *cmp_mask = malloc(sizeof(u8) * n);
+  // u8 *cmp_mask = malloc(sizeof(u8) * n);
+  u8 *cmp_mask = aligned_alloc(64, sizeof(u8) * n);
 
   FILE *fp = fopen("mask.dat", "wb");
 
